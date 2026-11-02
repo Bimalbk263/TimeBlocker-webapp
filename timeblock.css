@@ -1,0 +1,682 @@
+/* ==========================================================================
+   1. Design Variables & Global Resets
+   ========================================================================== */
+:root {
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+
+  /* Categories */
+  --fixed-bg: #fee2e2;
+  --fixed-border: #f87171;
+  --deep-bg: #dbeafe;
+  --deep-border: #60a5fa;
+  --errand-bg: #fef3c7;
+  --errand-border: #facc15;
+  --break-bg: #dcfce7;
+  --break-border: #4ade80;
+  --sleep-bg: #f3e8ff;
+  --sleep-border: #c084fc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+  padding: 24px 16px;
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.hidden-input {
+  display: none;
+}
+
+/* ==========================================================================
+   2. Buttons & Shared UI Components
+   ========================================================================== */
+button, .btn {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-outline {
+  background: white;
+  border-color: var(--border);
+  color: var(--text-main);
+}
+.btn-outline:hover {
+  background: #f1f5f9;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+.btn-secondary:hover {
+  background: #cbd5e1;
+}
+
+.btn-focus {
+  background: #10b981;
+  color: white;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+}
+.btn-focus:hover {
+  background: #059669;
+}
+
+.btn-tool {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  border-radius: 6px;
+}
+.btn-tool:hover {
+  background: #e2e8f0;
+}
+.btn-tool-sm {
+  padding: 2px 8px;
+}
+
+.btn-icon-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+.btn-icon-action:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+.btn-delete:hover {
+  color: #ef4444;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stats-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  background: #e2e8f0;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   3. Header & Notifications
+   ========================================================================== */
+.save-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.save-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+  background: var(--card-bg);
+  padding: 18px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.header-titles h1 {
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+.header-titles p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ==========================================================================
+   4. Motivational Quote Box
+   ========================================================================== */
+.quote-box {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #f8fafc;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+.quote-content {
+  flex: 1;
+  min-width: 260px;
+}
+
+.quote-text {
+  font-size: 0.98rem;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.quote-author {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.quote-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-quote {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.btn-quote:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ==========================================================================
+   5. Workspace Layout & Timer
+   ========================================================================== */
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.timer-widget {
+  background: #eff6ff;
+  border: 2px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timer-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e40af;
+  text-transform: uppercase;
+}
+
+.timer-task-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e40af;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timer-digits {
+  font-size: 2.2rem;
+  font-weight: 800;
+  font-family: monospace;
+  color: #1e3a8a;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 4px 0;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ==========================================================================
+   6. Block Scheduler Form
+   ========================================================================== */
+.block-creator {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  transition: all 0.25s ease;
+}
+
+.block-creator.is-editing {
+  border: 2px solid var(--accent);
+  background: #eff6ff;
+}
+
+.edit-banner {
+  display: none;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+.is-editing .edit-banner {
+  display: flex;
+}
+
+.form-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.time-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.time-picker-group input[type="time"] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  outline: none;
+  background: white;
+}
+
+.select-cat {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  outline: none;
+  background: white;
+  margin-left: auto;
+}
+
+.input-title {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  outline: none;
+  background: white;
+}
+.input-title:focus,
+.textarea-tasks:focus {
+  border-color: var(--accent);
+}
+
+.format-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.toolbar-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  align-self: center;
+  margin-right: 4px;
+}
+
+.textarea-tasks {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  margin-bottom: 12px;
+  background: white;
+}
+
+.form-buttons-row {
+  display: flex;
+  gap: 8px;
+}
+.btn-submit-block {
+  flex: 1;
+  padding: 10px;
+}
+.btn-cancel-block {
+  display: none;
+  padding: 10px 16px;
+}
+
+/* ==========================================================================
+   7. Timeline & Schedule Blocks
+   ========================================================================== */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-block {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border-left: 6px solid;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.block-times {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.block-duration {
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.block-main-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.block-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Subtask Checklist */
+.subtasks-container {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.subtask-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+}
+.subtask-item input[type="checkbox"] {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+}
+.subtask-item.done span {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+.subtask-item.note-item {
+  color: var(--text-muted);
+}
+.subtask-number {
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 20px;
+}
+
+/* Categories */
+.cat-fixed {
+  background: var(--fixed-bg);
+  border-color: var(--fixed-border);
+}
+.cat-deep {
+  background: var(--deep-bg);
+  border-color: var(--deep-border);
+}
+.cat-errand {
+  background: var(--errand-bg);
+  border-color: var(--errand-border);
+}
+.cat-break {
+  background: var(--break-bg);
+  border-color: var(--break-border);
+}
+.cat-sleep {
+  background: var(--sleep-bg);
+  border-color: var(--sleep-border);
+}
+
+.gap-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+.empty-timeline-msg {
+  text-align: center;
+  color: #94a3b8;
+  padding: 30px;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   8. Sidebar & Errands List
+   ========================================================================== */
+.sticky-sidebar {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-help-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.micro-input-group {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.micro-input-group input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.todo-item.completed span {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+.todo-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.card-info {
+  background: #eff6ff;
+  border-color: #93c5fa;
+  color: #1e3a8a;
+}
+.card-info h4 {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+.card-info p {
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   9. Responsive & Print Styles
+   ========================================================================== */
+@media (max-width: 920px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  body {
+    padding: 0;
+    background: white;
+  }
+  .save-banner,
+  .quote-box,
+  .timer-widget,
+  .block-creator,
+  .header-actions,
+  .block-actions,
+  .micro-input-group,
+  .card-info {
+    display: none !important;
+  }
+  .grid-layout {
+    display: block;
+  }
+  .schedule-block {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    margin-bottom: 8px;
+  }
+}
