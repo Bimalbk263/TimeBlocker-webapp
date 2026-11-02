@@ -127,6 +127,11 @@ button, .btn {
   color: #ef4444;
 }
 
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.76rem;
+}
+
 .card {
   background: var(--card-bg);
   border-radius: 12px;
@@ -153,7 +158,7 @@ button, .btn {
 }
 
 /* ==========================================================================
-   3. Header & Notifications
+   3. Header, User Badge & Notifications
    ========================================================================== */
 .save-banner {
   display: flex;
@@ -199,8 +204,38 @@ button, .btn {
 .header-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
 }
 
 /* ==========================================================================
@@ -647,7 +682,110 @@ button, .btn {
 }
 
 /* ==========================================================================
-   9. Responsive & Print Styles
+   9. Auth Modal Overlay
+   ========================================================================== */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.auth-overlay.hidden {
+  display: none;
+}
+
+.auth-card {
+  background: #ffffff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.auth-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+
+.auth-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.auth-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.auth-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.auth-field input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.auth-field input:focus {
+  border-color: var(--accent);
+}
+
+.auth-error {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-height: 18px;
+  margin-bottom: 12px;
+}
+
+.btn-auth-submit {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.92rem;
+}
+
+/* ==========================================================================
+   10. Responsive & Print Styles
    ========================================================================== */
 @media (max-width: 920px) {
   .grid-layout {
@@ -667,7 +805,8 @@ button, .btn {
   .header-actions,
   .block-actions,
   .micro-input-group,
-  .card-info {
+  .card-info,
+  .auth-overlay {
     display: none !important;
   }
   .grid-layout {
