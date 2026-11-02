@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeBlock Studio — Focus & Storage Safe</title>
+  <link rel="stylesheet" href="timeblock.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Storage & Auto-save Status Bar -->
+    <div class="save-banner" id="save-status-bar">
+      <span id="save-status-text">🟢 Data Locked & Saved Locally</span>
+      <div class="save-actions">
+        <button type="button" class="btn-tool" id="btn-export">💾 Export Backup</button>
+        <button type="button" class="btn-tool" id="btn-import-trigger">📂 Restore Backup</button>
+        <input type="file" id="import-file" class="hidden-input" accept=".json">
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-titles">
+        <h1>TimeBlock Studio — Focus & Storage Safe</h1>
+        <p>Set custom blocks, run focus sessions, and rest assured your data is saved.</p>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-outline" id="btn-clear-day">🧹 Clear Day</button>
+        <button type="button" class="btn btn-primary" id="btn-print">🖨️ Print / Save PDF</button>
+      </div>
+    </header>
+
+    <!-- Quote Box -->
+    <section class="quote-box" aria-label="Motivational Quote">
+      <div class="quote-content">
+        <blockquote class="quote-text" id="quote-display">
+          "Deep work is the ability to focus without distraction on a cognitively demanding task."
+        </blockquote>
+        <div class="quote-author" id="author-display">— Cal Newport</div>
+      </div>
+      <div class="quote-controls">
+        <button type="button" class="btn-quote" id="btn-quote-suggest">✨ Suggest Quote</button>
+        <button type="button" class="btn-quote" id="btn-quote-custom">✏️ Set Custom</button>
+      </div>
+    </section>
+
+    <!-- Main Grid Workspace -->
+    <main class="grid-layout">
+      <!-- Left Column: Form & Schedule -->
+      <section class="main-column">
+        <!-- Focus Timer Widget -->
+        <div class="timer-widget" id="timer-box">
+          <div class="timer-top">
+            <span class="timer-badge">⏱️ Focus Session</span>
+            <span class="timer-task-label" id="timer-task-name">No active block selected</span>
+          </div>
+          <div class="timer-digits" id="timer-display">25:00</div>
+          <div class="timer-controls">
+            <button type="button" class="btn btn-primary" id="btn-timer-toggle">▶️ Start Focus</button>
+            <button type="button" class="btn btn-secondary" id="btn-timer-minus">-5m</button>
+            <button type="button" class="btn btn-secondary" id="btn-timer-plus">+5m</button>
+            <button type="button" class="btn btn-outline" id="btn-timer-reset">Reset</button>
+          </div>
+        </div>
+
+        <!-- Block Scheduler Card -->
+        <div class="card">
+          <div class="card-title">
+            <span id="form-heading">Schedule a Block</span>
+            <span class="stats-badge" id="total-focus-time">0h Study Planned</span>
+          </div>
+
+          <div class="block-creator" id="block-creator">
+            <div class="edit-banner" id="edit-banner">
+              <span>✏️ Editing block</span>
+              <button type="button" class="btn-tool btn-tool-sm" id="btn-cancel-edit-banner">Cancel</button>
+            </div>
+
+            <div class="form-row-top">
+              <div class="time-picker-group">
+                <label for="start-time">From:</label>
+                <input type="time" id="start-time" value="09:00">
+                <label for="end-time">To:</label>
+                <input type="time" id="end-time" value="10:30">
+              </div>
+              <select id="task-cat" class="select-cat" aria-label="Block Category">
+                <option value="deep" selected>🔵 Deep Study</option>
+                <option value="fixed">🔴 Fixed (Class / Lecture)</option>
+                <option value="errand">🟡 Errands Block</option>
+                <option value="break">🟢 Break / Gym</option>
+                <option value="sleep">🟣 Sleep</option>
+              </select>
+            </div>
+
+            <input type="text" id="task-title" class="input-title" placeholder="Block Title (e.g., Biology Midterm Prep)">
+
+            <div class="format-toolbar">
+              <span class="toolbar-label">Insert:</span>
+              <button type="button" class="btn-tool" id="btn-insert-check">☑️ Checklist Item</button>
+              <button type="button" class="btn-tool" id="btn-insert-num">🔢 Numbered Step</button>
+              <button type="button" class="btn-tool" id="btn-insert-bullet">• Bullet</button>
+            </div>
+
+            <textarea 
+              id="task-details" 
+              class="textarea-tasks" 
+              placeholder="List specific tasks or checklist here...&#10;[ ] Read Chapter 4 pages 80-100&#10;[ ] Complete problem set 1-5"
+            ></textarea>
+
+            <div class="form-buttons-row">
+              <button type="button" class="btn btn-primary btn-submit-block" id="btn-submit">
+                + Schedule This Block
+              </button>
+              <button type="button" class="btn btn-secondary btn-cancel-block" id="btn-cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <!-- Timeline Blocks Container -->
+          <div class="timeline" id="timeline-container"></div>
+        </div>
+      </section>
+
+      <!-- Right Column: Micro-Tasks & Storage Info -->
+      <aside class="sticky-sidebar">
+        <div class="card">
+          <div class="card-title">
+            <span>Errands & Quick Chores</span>
+            <span class="stats-badge" id="task-counter">0 left</span>
+          </div>
+          <p class="sidebar-help-text">
+            Batch quick chores here and knock them out in your <strong>🟡 Errands Block</strong>.
+          </p>
+          <div class="micro-input-group">
+            <input type="text" id="new-todo" placeholder="e.g., Return books, buy toothpaste...">
+            <button type="button" class="btn btn-primary" id="btn-add-todo">Add</button>
+          </div>
+          <ul class="todo-list" id="todo-list-container"></ul>
+        </div>
+
+        <div class="card card-info">
+          <h4>🔒 Storage Protection:</h4>
+          <p>
+            Your blocks are saved after every keypress. If you clear browser history or switch devices, use <strong>"💾 Export Backup"</strong> at the top to save an offline copy!
+          </p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="timeblock.js"></script>
+  
+</body>
+</html>
