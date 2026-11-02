@@ -26,12 +26,19 @@
         <p>Set custom blocks, run focus sessions, and rest assured your data is saved.</p>
       </div>
       <div class="header-actions">
+        <!-- Active User Badge -->
+        <div class="user-profile" id="user-profile" style="display: none;">
+          <span class="user-avatar" id="user-avatar">U</span>
+          <span class="user-name" id="user-display-name">User</span>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-logout">🚪 Logout</button>
+        </div>
+
         <button type="button" class="btn btn-outline" id="btn-clear-day">🧹 Clear Day</button>
         <button type="button" class="btn btn-primary" id="btn-print">🖨️ Print / Save PDF</button>
       </div>
     </header>
 
-    <!-- Quote Box -->
+    <!-- Motivational Quote Box -->
     <section class="quote-box" aria-label="Motivational Quote">
       <div class="quote-content">
         <blockquote class="quote-text" id="quote-display">
@@ -141,16 +148,44 @@
         </div>
 
         <div class="card card-info">
-          <h4>🔒 Storage Protection:</h4>
+          <h4>🔒 User Account Protection:</h4>
           <p>
-            Your blocks are saved after every keypress. If you clear browser history or switch devices, use <strong>"💾 Export Backup"</strong> at the top to save an offline copy!
+            Your blocks and tasks are securely bound to your username. You can log out anytime and log back in without losing your progress.
           </p>
         </div>
       </aside>
     </main>
   </div>
 
+  <!-- User Login & Registration Modal Overlay -->
+  <div class="auth-overlay hidden" id="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tab-login">Login</button>
+        <button type="button" class="auth-tab" id="tab-register">Create Account</button>
+      </div>
+
+      <form id="auth-form" autocomplete="off">
+        <h3 id="auth-title">Welcome Back</h3>
+        <p class="auth-subtitle" id="auth-desc">Enter your credentials to load your workspace.</p>
+
+        <div class="auth-field">
+          <label for="auth-username">Username</label>
+          <input type="text" id="auth-username" required placeholder="e.g. alex" autofocus>
+        </div>
+
+        <div class="auth-field">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" required placeholder="••••••••">
+        </div>
+
+        <div class="auth-error" id="auth-error"></div>
+
+        <button type="submit" class="btn btn-primary btn-auth-submit" id="btn-auth-submit">Login</button>
+      </form>
+    </div>
+  </div>
+
   <script src="script.js" defer></script>
-  
 </body>
 </html>
