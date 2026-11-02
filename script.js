@@ -1,5 +1,6 @@
 /**
  * TimeBlock Studio — Main Application Script
+ * Features: Multi-User Authentication, Per-Account Storage, Persistent Sessions
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,9 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Constants & Default Data
   // ==========================================
   const STORAGE_KEYS = {
-    BLOCKS: 'tb_safe_blocks',
-    TODOS: 'tb_safe_todos',
-    QUOTE: 'tb_safe_quote'
+    USERS_DB: 'tb_users_db',
+    ACTIVE_SESSION: 'tb_active_session'
   };
 
   const DEFAULT_QUOTES = [
@@ -21,8 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   // ==========================================
-  // 2. Application State
+  // 2. Application & User State
   // ==========================================
+  let currentUser = null;
   let customBlocks = [];
   let todoData = [];
   let currentQuote = DEFAULT_QUOTES[0];
@@ -36,10 +37,29 @@ document.addEventListener('DOMContentLoaded', () => {
   let timerRunning = false;
   let activeTaskTitle = "General Study";
 
+  // Auth Dialog State
+  let isRegisterMode = false;
+
   // ==========================================
   // 3. DOM Cache
   // ==========================================
   const DOM = {
+    // Auth
+    authOverlay: document.getElementById('auth-overlay'),
+    authForm: document.getElementById('auth-form'),
+    tabLogin: document.getElementById('tab-login'),
+    tabRegister: document.getElementById('tab-register'),
+    authTitle: document.getElementById('auth-title'),
+    authDesc: document.getElementById('auth-desc'),
+    authUsername: document.getElementById('auth-username'),
+    authPassword: document.getElementById('auth-password'),
+    authError: document.getElementById('auth-error'),
+    btnAuthSubmit: document.getElementById('btn-auth-submit'),
+    userProfile: document.getElementById('user-profile'),
+    userAvatar: document.getElementById('user-avatar'),
+    userDisplayName: document.getElementById('user-display-name'),
+    btnLogout: document.getElementById('btn-logout'),
+
     // Top banner & controls
     saveStatusText: document.getElementById('save-status-text'),
     btnExport: document.getElementById('btn-export'),
@@ -90,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // ==========================================
-  // 4. Persistence & Storage
+  // 4. Persistence & Multi-User Accounts
   // ==========================================
   function initStoragePersistence() {
     if (navigator.storage && navigator.storage.persist) {
@@ -100,13 +120,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function loadInitialData() {
+  function getUsersDatabase() {
     try {
-      const storedBlocks = localStorage.getItem(STORAGE_KEYS.BLOCKS);
-      const storedTodos = localStorage.getItem(STORAGE_KEYS.TODOS);
-      const storedQuote = localStorage.getItem(STORAGE_KEYS.QUOTE);
+      const data = localStorage.getItem(STORAGE_KEYS.USERS_DB);
+      return data ? JSON.parse(data) : {};
+    } catch (e) {
+      console.error("Error reading users db:", e);
+      return {};
+    }
+  }
 
-      customBlocks = storedBlocks !== null ? JSON.parse(storedBlocks) : [
+  function saveUsersDatabase(users) {
+    localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(users));
+  }
+
+  function handleRegister(username, password) {
+    const users = getUsersDatabase();
+    if (users[username]) {
+      return { success: false, message: "Username already exists. Please login." };
+    }
+
+    // Default starter template for new user
+    users[username] = {
+      password: btoa(password),
+      blocks: [
         {
           id: 1,
           start: '09:00',
@@ -115,36 +152,97 @@ document.addEventListener('DOMContentLoaded', () => {
           details: '[ ] Review textbook chapter\n[ ] Practice questions 1-5',
           type: 'deep'
         }
-      ];
+      ],
+      todos: [{ text: 'Pick up groceries', done: false }],
+      quote: DEFAULT_QUOTES[0]
+    };
 
-      todoData = storedTodos !== null ? JSON.parse(storedTodos) : [
-        { text: 'Pick up groceries', done: false }
-      ];
+    saveUsersDatabase(users);
+    return { success: true };
+  }
 
-      if (storedQuote !== null) {
-        currentQuote = JSON.parse(storedQuote);
-      }
-    } catch (e) {
-      console.error("Error reading localStorage:", e);
+  function handleLogin(username, password) {
+    const users = getUsersDatabase();
+    const user = users[username];
+
+    if (!user || user.password !== btoa(password)) {
+      return { success: false, message: "Invalid username or password." };
     }
+
+    return { success: true };
+  }
+
+  function switchUserSession(username) {
+    currentUser = username;
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, username);
+
+    DOM.userDisplayName.innerText = username;
+    DOM.userAvatar.innerText = username.charAt(0).toUpperCase();
+    DOM.userProfile.style.display = 'flex';
+
+    DOM.authOverlay.classList.add('hidden');
+    loadUserData();
+  }
+
+  function logout() {
+    currentUser = null;
+    localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
+    resetTimer();
+
+    customBlocks = [];
+    todoData = [];
+    renderTimeline();
+    renderTodos();
+
+    DOM.userProfile.style.display = 'none';
+    DOM.authUsername.value = '';
+    DOM.authPassword.value = '';
+    DOM.authError.innerText = '';
+    setAuthMode(false);
+    DOM.authOverlay.classList.remove('hidden');
+    DOM.authUsername.focus();
+  }
+
+  function loadUserData() {
+    if (!currentUser) return;
+    const users = getUsersDatabase();
+    const user = users[currentUser];
+
+    if (user) {
+      customBlocks = user.blocks || [];
+      todoData = user.todos || [];
+      currentQuote = user.quote || DEFAULT_QUOTES[0];
+    }
+
+    renderQuote();
+    renderTimeline();
+    renderTodos();
+    updateTimerDisplay();
   }
 
   function saveData() {
-    try {
-      localStorage.setItem(STORAGE_KEYS.BLOCKS, JSON.stringify(customBlocks));
-      localStorage.setItem(STORAGE_KEYS.TODOS, JSON.stringify(todoData));
-      localStorage.setItem(STORAGE_KEYS.QUOTE, JSON.stringify(currentQuote));
+    if (!currentUser) return;
 
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      DOM.saveStatusText.innerText = `🟢 Saved Automatically at ${timeStr}`;
+    try {
+      const users = getUsersDatabase();
+      if (users[currentUser]) {
+        users[currentUser].blocks = customBlocks;
+        users[currentUser].todos = todoData;
+        users[currentUser].quote = currentQuote;
+        saveUsersDatabase(users);
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        DOM.saveStatusText.innerText = `🟢 Saved Automatically for @${currentUser} at ${timeStr}`;
+      }
     } catch (e) {
-      DOM.saveStatusText.innerText = `⚠️ Storage blocked by browser! Please export backup.`;
+      DOM.saveStatusText.innerText = `⚠️ Storage blocked! Please export backup.`;
     }
   }
 
   function exportDataBackup() {
     const backupData = {
+      username: currentUser,
       blocks: customBlocks,
       todos: todoData,
       quote: currentQuote,
@@ -155,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `timeblock_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `timeblock_${currentUser || 'user'}_backup_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -182,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // Reset input
+    e.target.value = '';
   }
 
   // ==========================================
@@ -601,10 +699,61 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 10. Event Listeners Delegation
+  // 10. Event Listeners & Auth Mode
   // ==========================================
+  function setAuthMode(register) {
+    isRegisterMode = register;
+    DOM.authError.innerText = '';
+    if (register) {
+      DOM.tabRegister.classList.add('active');
+      DOM.tabLogin.classList.remove('active');
+      DOM.authTitle.innerText = "Create an Account";
+      DOM.authDesc.innerText = "Your schedule will be saved exclusively under your account.";
+      DOM.btnAuthSubmit.innerText = "Sign Up";
+    } else {
+      DOM.tabLogin.classList.add('active');
+      DOM.tabRegister.classList.remove('active');
+      DOM.authTitle.innerText = "Welcome Back";
+      DOM.authDesc.innerText = "Enter your credentials to load your workspace.";
+      DOM.btnAuthSubmit.innerText = "Login";
+    }
+  }
+
   function attachEventListeners() {
-    // Top Bar
+    // Auth Modal Tabs & Submit
+    DOM.tabLogin.addEventListener('click', () => setAuthMode(false));
+    DOM.tabRegister.addEventListener('click', () => setAuthMode(true));
+
+    DOM.authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = DOM.authUsername.value.trim().toLowerCase();
+      const pass = DOM.authPassword.value.trim();
+
+      if (!user || !pass) {
+        DOM.authError.innerText = "Please fill in all fields.";
+        return;
+      }
+
+      if (isRegisterMode) {
+        const result = handleRegister(user, pass);
+        if (!result.success) {
+          DOM.authError.innerText = result.message;
+          return;
+        }
+      } else {
+        const result = handleLogin(user, pass);
+        if (!result.success) {
+          DOM.authError.innerText = result.message;
+          return;
+        }
+      }
+
+      switchUserSession(user);
+    });
+
+    DOM.btnLogout.addEventListener('click', logout);
+
+    // Top Bar Actions
     DOM.btnExport.addEventListener('click', exportDataBackup);
     DOM.btnImportTrigger.addEventListener('click', () => DOM.importFile.click());
     DOM.importFile.addEventListener('change', importDataBackup);
@@ -621,7 +770,7 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.btnTimerPlus.addEventListener('click', () => adjustTimer(5));
     DOM.btnTimerReset.addEventListener('click', resetTimer);
 
-    // Form Formatting
+    // Form Quick Formatting
     DOM.btnInsertCheck.addEventListener('click', () => insertFormattingText('[ ] '));
     DOM.btnInsertNum.addEventListener('click', () => {
       const matches = DOM.taskDetails.value.match(/^\d+\./gm);
@@ -635,26 +784,21 @@ document.addEventListener('DOMContentLoaded', () => {
     DOM.btnCancel.addEventListener('click', cancelEdit);
     DOM.btnCancelBanner.addEventListener('click', cancelEdit);
 
-    // Timeline Event Delegation (Click on dynamic buttons & checkboxes)
+    // Dynamic Timeline Events
     DOM.timelineContainer.addEventListener('click', (e) => {
-      const target = e.target;
-
-      // Start focus
-      const focusBtn = target.closest('.btn-focus-block');
+      const focusBtn = e.target.closest('.btn-focus-block');
       if (focusBtn) {
         startFocusOnBlock(focusBtn.dataset.title, parseInt(focusBtn.dataset.duration, 10));
         return;
       }
 
-      // Edit block
-      const editBtn = target.closest('.btn-edit-block');
+      const editBtn = e.target.closest('.btn-edit-block');
       if (editBtn) {
         startEditBlock(Number(editBtn.dataset.id));
         return;
       }
 
-      // Delete block
-      const deleteBtn = target.closest('.btn-delete-block');
+      const deleteBtn = e.target.closest('.btn-delete-block');
       if (deleteBtn) {
         deleteBlock(Number(deleteBtn.dataset.id));
         return;
@@ -694,12 +838,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   function init() {
     initStoragePersistence();
-    loadInitialData();
-    renderQuote();
-    updateTimerDisplay();
-    renderTimeline();
-    renderTodos();
     attachEventListeners();
+
+    // Check existing login session
+    const existingSession = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
+    const users = getUsersDatabase();
+
+    if (existingSession && users[existingSession]) {
+      switchUserSession(existingSession);
+    } else {
+      DOM.authOverlay.classList.remove('hidden');
+      DOM.authUsername.focus();
+    }
   }
 
   init();
