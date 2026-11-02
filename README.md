@@ -6,7 +6,7 @@ A lightweight, privacy-focused daily planner and focus companion built with pure
 [![No Dependencies](https://img.shields.io/badge/Dependencies-0-brightgreen.svg)]()
 [![Platform: Web](https://img.shields.io/badge/Platform-Web-orange.svg)]()
 
-> **Live Demo:** [Launch TimeBlock Studio](https://Bimalbk263.github.io/timeblock-studio/)
+> **Live Demo:** [Launch TimeBlock Studio](https://Bimalbk263.github.io/TimeBlocker-webapp/)
 ---
 
 ## ✨ Features
